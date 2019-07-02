@@ -1,0 +1,574 @@
+Hadoop环境搭建
+
+https://blog.csdn.net/yanhang0610/article/details/51896545
+
+
+Hadoop环境搭建
+2016年07月13日 11:34:55 yanhang0610 阅读数 415
+ 版权声明：本文为博主原创文章，版权归作者所有，转载请注明出处。博客地址：http://blog.csdn.net/yanhang0610 https://blog.csdn.net/yh880610/article/details/51896545
+添加：
+
+1        SSH无密码登录配置（方法2）
+实现主机A免密登录到主机B。
+
+1.1 主机A生成密钥对
+# ssh-keygen -t rsa
+
+1.2 复制公钥的免密登录目标主机B
+# ssh-copy-id -i ~/.ssh/id_rsa.pub <主机B的hostname或ip>
+
+1.3 免密登录
+# ssh <主机B的hostname或ip>
+
+--------------------------------------------------------------------------------
+
+1     系统环境
+CentOS 6.5 32bit
+
+hadoop-2.6.4.tar.gz
+
+jdk-7-linux-i586.rpm
+
+2     ip配置
+2.1   修改配置文件
+    vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+   配置示例如下：
+
+DEVICE=eth0
+
+BOOTPROTO=static
+
+BROADCAST=192.168.91.255
+
+IPADDR=192.168.91.10
+
+IPV6INIT=no
+
+IPV6_AUTOCONF=no
+
+NETMASK=255.255.255.0
+
+NETWORK=192.168.91.0
+
+ONBOOT=yes
+
+GATEWAY=192.168.1.1
+
+DNS1=192.168.1.1
+
+   各配置说明：
+
+DEVICE=eth0 #描述网卡对应的设备别名，例如ifcfg-eth0的文件中它为eth0
+
+BOOTPROTO=static #设置网卡获得ip地址的方式，可能的选项为static，dhcp或bootp，分别对应静态指定的 ip地址，通过dhcp协议获得的ip地址，通过bootp协议获得的ip地址
+
+BROADCAST=192.168.0.255#对应的子网广播地址
+
+HWADDR=00:07:E9:05:E8:B4#对应的网卡物理地址
+
+IPADDR=12.168.1.2 #如果设置网卡获得 ip地址的方式为静态指定，此字段就指定了网卡对应的ip地址
+
+IPV6INIT=no
+
+IPV6_AUTOCONF=no
+
+NETMASK=255.255.255.0#网卡对应的网络掩码
+
+NETWORK=192.168.1.0#网卡对应的网络地址
+
+ONBOOT=yes #系统启动时是否设置此网络接口，设置为yes时，系统启动时激活此设备
+
+GATEWAY=192.168.1.1
+
+DNS1=192.168.1.1
+
+2.2   重启网络使配置生效
+    service network restart
+
+3     Java环境配置
+3.1   查看已有的jdk
+    rpm -qa | grep java
+
+3.2   安装jdk
+    rpm -ivh java-xxx-linux-i586-rpm
+
+    rpm包需到oracle官网下载，安装后默认位于/usr/java/xxx。
+
+3.3   设置环境变量
+3.3.1  新建java的环境变量配置
+    vi /etc/profile.d/java.sh
+
+   内容如下：
+
+   export JAVA_HOME=/usr/java/xxx
+
+   exportCLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+
+   export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
+
+3.3.2  给java.sh分配权限
+    chmod 755 /etc/profile.d/java.sh
+
+3.3.3  使配置生效
+    . /etc/profile
+
+   测试代码：
+
+HelloWorld.java
+
+public classHelloWorld {
+
+      public static void main(String[] args) {
+
+            System.out.println("helloworld in linux");
+
+      }
+
+}
+
+4     SSH无密码登录配置
+    本处示例两台服务器A和B之间的SSH登录配置，通过以下配置后实现A通过SSH登录B，B通过SSH登录A配置过程与A登录B一样。
+
+    示例A、B配置信息为：
+
+    Host  HostName  HostIp
+
+     A     hosta     ipa
+
+     B     hostb     ipb
+
+4.1   修改主机名和IP
+    主机名可通过以下命令修改HOSTNAME来修改：
+
+    vi /etc/sysconfig/network
+
+    查看HOSTNAME：
+
+    hostname
+
+4.2   配置hosts文件
+    实现ping主机名可ping通：
+
+    vi /etc/hosts
+
+    内容如下：
+
+    destHostIp destHostName
+
+    ...(需要访问几台服务器就添加几条)
+
+    如：ipa hosta
+
+       ipb hostb
+
+4.3   安装openssh和rsync
+    查看是否已安装：
+
+    rpm –qa | grep openssh
+
+    rpm –qa | grep rsync
+
+    安装：
+
+    yum install openssh
+
+    yum install rsync
+
+    service sshd restart
+
+4.4   主机A配置
+    配置当前主机A对目标登录主机B做SSH免密登录的核心在于两点：
+
+    1、A和B都参考4.4.4进行SSH配置。
+
+    2、把A的公钥发给B，B将A的公钥添加到自己的authorized_keys 授权密钥文件里（位置：~/.ssh/authorized_keys）。
+
+4.4.1  生成密钥对
+    ssh-keygen
+
+    询问其保存路径时直接回车采用默认路径。生成的密钥对：id_rsa和id_rsa.pub，默认存储在[ ~/.ssh ]目录下，[.ssh]目录权限为700。为便于区别，可将公钥重命名，如：id_rsa_hostA.pub。
+
+4.4.2  追加公钥到自己授权的key里面去
+       可将自己持有的公钥，如自己的和其他主机的公钥添加到授权文件里，使得给出公钥的一方能够通过ssh登录本主机，如：
+
+    cat ~/.ssh/id_rsa_hostA.pub >> ~/.ssh/authorized_keys
+
+    cat ~/.ssh/id_rsa_hostB.pub >> ~/.ssh/authorized_keys
+
+4.4.3  修改文件authorized_keys权限
+    chmod 600 ~/.ssh/authorized_keys
+
+4.4.4  设置SSH配置（需root权限）
+    vi /etc/ssh/sshd_config
+
+    内容如下：
+
+    RSAAuthentication yes # 启用 RSA 认证
+
+    PubkeyAuthentication yes # 启用公钥私钥配对认证方式
+
+    AuthorizedKeysFile .ssh/authorized_keys # 公钥文件路径（和上面生成的文件同）
+
+    重启使生效：
+
+    service sshd restart
+
+4.5   A将公钥发给目标主机B
+    目标主机为要通过SSH登录到的主机。
+
+    scp ~/.ssh/id_rsa_hostA.pub 远程用户名@远程服务器IP:~/.ssh
+
+    如：
+
+    scp ~/.ssh/id_rsa_hostA.pubhadoop@192.168.1.3:~/.ssh
+
+4.6   主机B配置
+    主机B使用上一步中公钥复制到的用户账户登录，如hadoop账户，在账户HOME目录下（如：/home/hadoop）下可看到复制过来的A的公钥。
+
+    若在账户HOME目录下无[.ssh]目录则新建，并设置目录权限为700：
+
+    mkdir ~/.ssh
+
+    chmod 700 ~/.ssh
+
+    参考4.4.2-4.4.4，把A的公钥添加到授权文件并配置SSH。
+
+4.7   测试
+    在主机A命令行输入：
+
+    ssh hadoop@ipb
+
+    或：
+
+    ssh hadoop@hostb
+
+    可实现登录到主机B。
+
+    其中hadoop为4.6中接收主机A的公钥的账户。
+
+5     Hadoop安装配置（完全分布式模式）
+       本例配置4台服务器的集群，服务器配置后的信息如下表5-1：
+
+Server
+
+TYPE
+
+HostName
+
+IP
+
+1
+
+NameNode
+
+nn
+
+192.168.1.100
+
+2
+
+DataNode
+
+dn01
+
+192.168.1.101
+
+3
+
+DataNode
+
+dn02
+
+192.168.1.102
+
+4
+
+SecondaryNameNode
+
+snn
+
+192.168.1.99
+
+    下列配置步骤需每台服务器都进行配置。
+
+5.1   安装
+5.1.1  下载
+    到官网http://hadoop.apache.org/releases.html/ 下载合适版本到自定路径。
+
+wget http://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz
+
+5.1.2  解压
+    tar -xvf hadoop-2.7.2.tar.gz
+
+5.1.3  移动至合适位置
+    mv hadoop-2.7.2 /usr/hadoop
+
+    安装完成。
+
+5.2   配置hadoop全局变量（可选）
+    vi /etc/profile.d/hadoop.sh
+
+    内容如下：
+
+    export HADOOP_HOME=/bigdata/hadoop-2.7.2
+
+    exportPATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+
+    使配置生效：
+
+    . /etc/profile
+
+5.3   指定配置文件位置
+       hadoop默认读取位于hadoop根目录下的etc/hadoop文件夹作为配置文件的位置，可根据需要在etc下创建不同的配置目录，通过连接（ln命令，符号链接）指定当前生效的配置文件目录。注意修改默认的hadoop文件夹名称（如改为hadoop_default），避免与“hadoop”链接同名导致hadoop无法正确找到配置文件。
+
+    如当前使用集群配置，配置所在的文件夹名称为hadoop_cluster，则创建连接如下：
+
+    ln -s hadoop_cluster hadoop
+
+    文件夹hadoop_cluster可直接复制自默认文件夹hadoop，如：
+
+    cp -R hadoop hadoop_cluster
+
+5.4   配置hadoop-env.sh
+       配置etc/hadoop文件夹里的hadoop-env.sh文件，设置JAVA_HOME值，若系统JAVA_HOME值已存在，则可跳过。如：
+
+    # The java implementation to use.
+
+    export JAVA_HOME=/usr/java/jdk1.8
+
+5.5   配置hostname、ip和ssh
+       参考第2、4点，按照表5-1进行服务器hostname、ip和ssh的配置。
+
+5.6   配置hadoop配置文件
+       配置文件位于etc/hadoop/下。
+
+       官方配置手册：
+
+http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/core-default.xml
+
+http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/hdfs-default.xml
+
+http://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/mapred-default.xml
+
+http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-common/yarn-default.xml
+
+5.6.1  core-site.xml
+       NameNode的配置信息。
+
+<configuration>
+
+    <property>
+
+        <name>fs.defaultFS</name>
+
+        <value>hdfs://nn:9000/</value><!-- 注意主机名不能包含下划线等特殊字符 -->
+
+    </property>
+
+</configuration>
+
+5.6.2  hdfs-site.xml
+<configuration>
+
+    <property>
+
+       <name>dfs.replication</name>
+
+        <value>2</value>  <!-- 2个DataNode -->
+
+    </property>
+
+</configuration>
+
+5.6.3  mapred-site.xml
+<configuration>
+
+    <property>
+
+        <name>mapreduce.framework.name</name>
+
+        <value>yarn</value>
+
+    </property>
+
+</configuration>
+
+5.6.4  yarn-site.xml
+<configuration>
+
+         <property>
+
+        <name>yarn.resourcemanager.hostname</name>
+
+        <value>nn</value>  <!-- 指定服务器nn为资源管理服务器 -->
+
+    </property>
+
+    <property>
+
+        <name>yarn.nodemanager.aux-services</name>
+
+       <value>mapreduce_shuffle</value>
+
+    </property>
+
+</configuration>
+
+5.6.5 slaves
+    写入所有DataNode的hostname，一行一个：
+
+dn01
+
+dn02
+
+5.7   配置Sencondary NameNode
+       经过5.6配置后，namenode和secondary namenode位于同一个主机，即namenode所在的主机上。若想将secondary namenode配置在另外一台单独的服务器上，则需在5.6的配置基础上做些修改。
+
+5.7.1  新增master配置文件
+    在etc/hadoop目录下，
+
+    vi master
+
+    添加需要当作secondary namenode的ip或hostname，可填写多台，一行一个：
+
+snn
+
+5.7.2  修改core-site.xml
+    在配置文件中增加如下内容：
+
+<property>
+
+    <name>fs.checkpoint.period</name>
+
+    <value>20</value>
+
+    <description>
+
+        The number of seconds between twoperiodic checkpoints.
+
+    </description>
+
+</property>
+
+<property>
+
+    <name>fs.default.name</name>
+
+    <value>hdfs://nn:9000</value>
+
+</property>
+
+<property>
+
+    <name>hadoop.tmp.dir</name>
+
+    <value>如：/home/hadoop/tmp</value>
+
+</property>
+
+<property>
+
+    <name>fs.checkpoint.size</name>
+
+    <value>67108864</value>
+
+</property>
+
+5.7.3  修改hdfs-site.xml
+    在配置文件中增加如下内容：
+
+<property>
+
+    <name>dfs.http.address</name>
+
+    <value>nn:50070</value>
+
+    <description>
+
+        The address and the base port where thedfs namenode web ui will listen on.
+
+        If the port is 0 then the server willstart on a free port.
+
+    </description>
+
+</property>
+
+<property>
+
+    <name>dfs.namenode.secondary.http-address</name>
+
+    <value>snn:50090</value>
+
+</property>
+
+5.8   启动集群
+5.8.1  格式化NameNode
+       若集群为首次启动，则需先格式化NameNode：
+
+    bin/hdfs namenode -format
+
+5.8.2  启动NameNode daemon和DataNode daemon
+       sbin/start-dfs.sh
+
+    启动成功后，可以通过http://localhost:50070/访问NameNode管理界面。
+
+    关闭：
+
+    sbin/stop-dfs.sh
+
+5.8.3 启动ResourceManager daemon和NodeManager daemon
+       sbin/start-yarn.sh
+
+       启动成功后，可以通过http://localhost:8088/访问ResourceManager管理界面。
+
+    关闭：
+
+    sbin/stop-yarn.sh
+
+5.9   验证
+    运行命令jps查看进程：
+
+    jps
+
+    每个服务器都有NodeManager。
+
+5.9.1  服务器nn
+       xxxx NameNode
+
+    xxxx ResourceManager
+
+5.9.2  服务器dn01
+    xxxx ResourceManager
+
+    xxxx DataNode
+
+5.9.3  服务器dn02
+    xxxx ResourceManager
+
+    xxxx DataNode
+
+5.9.4 服务器snn
+6     常见问题
+6.1   reverse mapping checking failed
+       0.0.0.0: reverse mapping checking getaddrinfofor localhost [127.0.0.1] failed - POSSIBLE BREAK-IN ATTEMPT!
+
+    解决：
+
+    假设从A登录B，则修改A主机上的ssh_config：
+
+    vi /etc/ssh/ssh_config
+
+    启用：GSSAPIAuthentication no
+
+6.2   Does not contain a valid host:port authority
+       解决：
+
+    主机名称不能包含下划线和其他特殊字符。
+
+
+--------------------- 
+作者：yanhang0610 
+来源：CSDN 
+原文：https://blog.csdn.net/yanhang0610/article/details/51896545 
+版权声明：本文为博主原创文章，转载请附上博文链接！

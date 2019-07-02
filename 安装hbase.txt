@@ -1,0 +1,14 @@
+
+
+Linux环境HBase安装与使用
+
+https://blog.csdn.net/gdfjhc/article/details/83692923
+
+
+下载镜像
+
+
+
+http://mirrors.tuna.tsinghua.edu.cn/apache/hbase/2.2.0/hbase-2.2.0-bin.tar.gz 
+
+

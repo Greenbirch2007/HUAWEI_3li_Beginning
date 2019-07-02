@@ -1,0 +1,199 @@
+https://blog.csdn.net/yanhang0610/article/details/77920603
+
+HBase的安装配置和使用Java连接
+2017年09月10日 10:33:22 yanhang0610 阅读数 4064
+ 版权声明：本文为博主原创文章，版权归作者所有，转载请注明出处。博客地址：http://blog.csdn.net/yanhang0610 https://blog.csdn.net/yh880610/article/details/77920603
+Hadoop集群搭建可参考：http://blog.csdn.net/yanhang0610/article/details/51896545
+1        系统环境
+系统：CentOS 7.0。
+
+版本：JDK 1.8.0_91，Hadoop 2.7.3，Zookeeper 3.4.9，Hbase 1.2.5。
+
+参考：https://wenku.baidu.com/view/b2bd94946bd97f192379e941.html
+
+2        安装
+官网： http://hbase.apache.org
+
+2.1 下载
+    下载合适版本的Hbase：
+
+    http://apache.mirror.gtcomm.net/hbase
+
+    hbase版本需与hadoop版本、jdk版本匹配，参考：
+
+http://hbase.apache.org/book.html#configuration
+
+2.2 安装
+    解压即完成安装，并移动到合适位置。
+
+2.3 设置环境变量
+# vi /etc/profile.d/hbase.sh
+export HBASE_HOME=/root/bigdata/hbase-1.2.5
+ 
+# chmod 755 /etc/profile.d/hbase.sh
+# . /etc/profile
+2.4 配置文件
+参考：http://www.cnblogs.com/nexiyi/p/hbase_config_94.html
+
+https://wenku.baidu.com/view/7110c790be23482fb5da4c97.html?pn=1
+
+2.4.1   配置regionservers
+snn
+
+dn01
+
+dn02
+
+2.4.2   配置hbase-env.sh
+# export HAVA_HOME=/usr/java/jdk1.8.0_91
+
+export HBASE_MANAGES_ZK=false  #禁用hbase管理zk，使用自己安装的zk
+
+2.4.3   配置hbase-site.xml
+<configuration>
+ 
+  <property>
+   <name>hbase.rootdir</name>
+   <value>hdfs://nn:9000/hbase</value>
+ </property>
+ 
+  <property>
+   <name>hbase.master</name>
+   <value>hdfs:nn:60000</value>
+ </property>
+ 
+  <property>
+   <name>hbase.cluster.distributed</name>
+   <value>true</value>
+ </property>
+ 
+  <!--zookeeper节点，hbase-env.sh里的HBASE_MANAGES_ZK=true时有效 -->
+  <property>
+   <name>hbase.zookeeper.quorum</name>
+   <value>nn,dn01,dn02</value>
+ </property>
+ 
+  <property>
+   <name>hbase.zookeeper.property.dataDir</name>
+   <value>/root/bigdata/zookeeper-3.4.9/dataDir</value>
+ </property>
+ 
+  <property>
+   <name>hbase.zookeeper.property.clientPort</name>
+   <value>2181</value>
+    </property>
+ 
+  <property>
+   <name>hbase.tmp.dir</name>
+   <value>/root/bigdata/hbase-1.2.5/tmpDir</value>
+ </property>
+ 
+  <!-- web ui-->
+  <property>
+   <name>hbase.master.info.port</name>
+   <value>60010</value>
+  </property>
+ 
+</configuration>
+2.4.4   配置backup-masters
+为了增加Hbase集群的可用性，可以为hbase增加多个backup master。当master挂掉后，backup master可以自动接管整个hbase的集群。
+
+配置backup master的方式是在hbase的conf下增加文件：backup-masters，在该文件里面增加backup master的机器列表，每台机器一条记录。
+
+2.5 安全配置
+3        运行
+在$HBASE_HOME/bin下，执行：
+
+# ./start-hbase.sh
+
+启动成功后可以访问WEB管理页面，如：
+
+http://192.168.1.210:60010
+
+关闭：
+
+# ./stop-hbase.sh
+
+4        连接
+4.1 Hbase Shell
+在$HBASE_HOME/bin下，执行：
+
+# ./hbase shell
+
+4.2 Hbase客户端工具
+4.3 Java连接
+4.3.1   环境配置
+在本地hosts文件（如C:\Windows\System32\drivers\etc\hosts）里加上HBase集群上的hosts配置。
+
+导入Hbase安装包下的lib文件夹里的所有jar包到classpath，可做成user library。
+
+4.3.2   示例代码
+package hbase.demo;
+ 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+ 
+public class Demo {
+   
+    public static void main(String[] args) {
+       String tableName = "member";
+      
+       try {
+           Configuration configuration = HBaseConfiguration.create();
+           configuration.set("hbase.zookeeper.property.clientPort","2181"); // zookeeper客户端访问端口
+           configuration.set("hbase.zookeeper.quorum","192.168.1.213"); // HBase集群服务器地址（任一台）
+          
+           HBaseAdmin admin = newHBaseAdmin(configuration);
+          
+           System.out.println(admin.tableExists(tableName));
+          
+           // 读取表数据
+           HTable table = newHTable(configuration,tableName);
+            Scan scan = new Scan();
+            ResultScanner rs =table.getScanner(scan);
+            for (Result result :rs) {
+            for (Cell cell : result.listCells()) {
+                 String key = Bytes.toString(CellUtil.cloneQualifier(cell));
+                 String value = Bytes.toString(CellUtil.cloneValue(cell));
+                  System.out.println(key +"=> " + value);
+                }
+            }
+          
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+    }
+ 
+}
+
+运行结果：
+
+true
+city => hangzhou
+contry => china
+province => zhejiang
+age => 24
+birthday => 1987-06-17
+company => alibaba
+city => jieyang
+contry => china
+province => guangdong
+town => xianqiao
+birthday => 1987-4-17
+company => alibaba
+favorite => movie
+5        常见问题
+5.1 Java连接Hbase集群报超时错误
+报错：java.io.IOException: Failed to get result within timeout,timeout=60000ms
+
+原因：开发环境本地未配置hosts。
+
+解决：在本地hosts文件（如C:\Windows\System32\drivers\etc\hosts）里加上HBase集群上的hosts配置即可。
