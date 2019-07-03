@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c77b526c-96c9-48c5-9e72-323b5b3dfddb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/HBase的安装配置和使用Java连接.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/安装hbase.txt" beforeDir="false" />
-    </list>
+    <list default="true" id="c77b526c-96c9-48c5-9e72-323b5b3dfddb" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +13,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Hbase_Python/file1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="115" selection-start-line="115" selection-end-line="116" selection-end-column="26" />
+            <state relative-caret-position="127">
+              <caret line="90" column="21" lean-forward="true" selection-start-line="90" selection-start-column="21" selection-end-line="90" selection-end-column="21" />
               <folding>
                 <element signature="e#388#401#0" expanded="true" />
               </folding>
@@ -78,6 +75,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -159,8 +157,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Hbase_Python/file1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="115" selection-start-line="115" selection-end-line="116" selection-end-column="26" />
+        <state relative-caret-position="127">
+          <caret line="90" column="21" lean-forward="true" selection-start-line="90" selection-start-column="21" selection-end-line="90" selection-end-column="21" />
           <folding>
             <element signature="e#388#401#0" expanded="true" />
           </folding>
