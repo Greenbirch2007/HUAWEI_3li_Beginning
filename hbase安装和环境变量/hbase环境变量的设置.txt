@@ -1,0 +1,26 @@
+需要修改HBase的配置文件，配置文件在conf文件夹下
+# vi conf/hbase-env.sh
+
+增加JDK的位置，以本机为例JDK被放在/usr/lib/jdk下
+
+export JAVA_HOME=/usr/lib/jdk/jdk1.7.0_51/
+
+
+先执行复制
+cp /home/r/jdk_12_0_1  /usr/lib/jdk/jdk_12_0_1/
+(没有jdk目录的话就新建一个)
+
+然后再在conf/hase-env.sh中
+
+将环境变量设置为 
+
+export JAVA_HOME=/usr/lib/jdk/jdk_12_0_1/:/usr/local/hadoop/bin
+
+
+   ##hadoop config
+
+     export HADOOP_HOME=/usr/hadoop/hadoop-1.2.1
+
+    export  PATH=$PATH:/usr/hadoop/hadoop-1.2.1/bin
+
+/home/r/hadoop-2.9.2-src/.ssh/id_rsa

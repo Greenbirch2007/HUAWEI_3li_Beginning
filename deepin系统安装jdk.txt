@@ -1,0 +1,45 @@
+sudo mv jdk-12.0.1 /usr/lib/java12
+
+
+在Deepin环境下配置jdk
+
+1、去JDK官网下载JDK,注意选择时不要选择ARM的版本，不知怎么在后面验证javac时会出现问题
+
+2、在当前文件下解压，我是在Downloads文件夹下。Deepin右键即可解压，也可以选择解压到自己预设的文件家中
+
+3、移动jdk文件夹，我是移动到/usr/lib/java8下，运用如下命令：
+
+sudo mv jdk1.8.0_171 /usr/lib/ava8
+1
+4、编写配置文章并保存 
+打开配置文件
+
+sudo gedit /etc/profile
+1
+在文件末尾添加如下内容，JAVA_HOME改为自己的安装路径
+
+JAVA_HOME=/usr/lib/java12/jdk-12.0.1
+ JRE_HOME=$JAVA_HOME/jre 
+ PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin     CLASSPATH=:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib
+export JAVA_HOME JRE_HOME PATH CLASSPATH
+
+
+
+
+
+
+
+1
+2
+3
+4
+使修改后的配置文件生效
+
+source /etc/profile
+1
+5、运行java -version与javac -vesion命令出现如下情况，配置成功
+--------------------- 
+作者：Skyones 
+来源：CSDN 
+原文：https://blog.csdn.net/qq_37501193/article/details/80587823 
+版权声明：本文为博主原创文章，转载请附上博文链接！

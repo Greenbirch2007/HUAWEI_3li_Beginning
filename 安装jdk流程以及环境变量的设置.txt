@@ -1,0 +1,64 @@
+
+1. 下载jdk文件的链接  
+https://www.oracle.com/technetwork/java/javase/downloads/jdk12-downloads-5295953.html
+
+
+安装解压JDK到指定目录
+将压缩包复制到要安装的目录后，打开终端执行以下命令开始解压
+
+tar -zxvf jdk-10.0.2_linux-x64_bin.tar.gztar
+配置环境变量
+为防止无法写入环境变量，我们须获得root(超级管理员)权限再写入，命令如下：
+
+sudo vim /etc/profile
+打开profile文件之后在文末添加如下环境变量(红色路径根据自己的安装路径而定)【初次接触vim(编辑器之神)的小伙伴可能不了解编辑、保存方法，具体如下：
+
+进去之后按i开始编辑，编辑完后按Esc,再按Shift+zz组合键保存退出】：
+
+JAVA_HOME=/home/bear/install/jdk-10.0.2
+ 
+CLASSPATH=.:$JAVA_HOME/bin.tools.jar
+ 
+PATH=$JAVA_HOME/bin:$PATH
+ 
+export JAVA_HOME CLASSPATH PATH
+
+
+配置立即生效
+
+source /etc/profile
+检测
+输入java查看是否配置好环境(如下字样表明配置成功)
+
+
+
+新方法
+细心读者会发现以上配置好的环境变量在新打开的终端会出现错误，每次需重新输入source /etc/profile后再输入Java才可以，
+
+下面介绍一种永久配置方法
+
+终端输入：
+
+sudo vim /etc/bash.bashrc
+在文末添加环境变量：
+
+JAVA_HOME=//home/r/jdk-12.0.1
+ 
+CLASSPATH=.:$JAVA_HOME/bin.tools.jar
+ 
+PATH=$JAVA_HOME/bin:$PATH
+ 
+export JAVA_HOME CLASSPATH PATH
+
+
+保存退出(Shift+zz)
+
+生效 ：
+
+source /etc/bash.bashrc
+重新打开终端输入Java(出现帮助信息则配置成功)
+--------------------- 
+作者：北冥有熊 
+来源：CSDN 
+原文：https://blog.csdn.net/qq_41892229/article/details/81773079 
+版权声明：本文为博主原创文章，转载请附上博文链接！

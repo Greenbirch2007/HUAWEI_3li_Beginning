@@ -1,0 +1,117 @@
+本章将介绍如何安装HBase和初始配置。 需要用Java和Hadoop来处理HBase，所以必须下载java和Hadoop并安装系统中。
+
+	安装前设置
+
+	安装Hadoop在Linux环境下之前，需要建立和使用Linux SSH(安全Shell)。按照下面设立Linux环境提供的步骤。
+
+	创建一个用户
+
+	首先，建议从Unix创建一个单独的Hadoop用户，文件系统隔离Hadoop文件系统。按照下面给出创建用户的步骤。
+
+	
+		开启root使用命令 “su”.
+	
+		使用root帐户命令创建用户 “useradd username”.
+	
+		现在，可以使用命令打开一个现有的用户帐户 “su username”.
+
+
+	打开Linux终端，输入以下命令来创建一个用户
+$ su
+password:
+# useradd hadoop
+# passwd hadoop
+New passwd:
+Retype new passwd
+
+
+
+
+
+
+
+
+
+
+			
+			
+			
+				
+
+				
+					
+					
+					
+					
+						( adsbygoogle = window.adsbygoogle || []).push({});
+						
+				
+
+				 
+
+				
+
+					
+					
+
+					
+	本章将介绍如何安装HBase和初始配置。 需要用Java和Hadoop来处理HBase，所以必须下载java和Hadoop并安装系统中。
+
+	安装前设置
+
+	安装Hadoop在Linux环境下之前，需要建立和使用Linux SSH(安全Shell)。按照下面设立Linux环境提供的步骤。
+
+	创建一个用户
+
+	首先，建议从Unix创建一个单独的Hadoop用户，文件系统隔离Hadoop文件系统。按照下面给出创建用户的步骤。
+
+	
+		开启root使用命令 “su”.
+	
+		使用root帐户命令创建用户 “useradd username”.
+	
+		现在，可以使用命令打开一个现有的用户帐户 “su username”.
+
+
+	打开Linux终端，输入以下命令来创建一个用户
+$ su
+password:
+# useradd hadoop
+# passwd hadoop
+New passwd:
+Retype new passwd
+
+
+	SSH设置和密钥生成
+
+	SSH设置需要在集群上执行不同的操作，如启动，停止和分布式守护shell操作。进行身份验证不同的Hadoop用户，需要一种用于Hadoop的用户提供的公钥/私钥对，并用不同的用户共享。
+
+	以下的命令被用于生成使用SSH密钥值对。复制公钥从id_rsa.pub为authorized_keys，并提供所有者，读写权限到authorized_keys文件。
+$ ssh-keygen -t rsa
+$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+$ chmod 0600 ~/.ssh/authorized_keys
+
+验证ssh
+ssh localhost
+
+
+	安装Java
+
+	Java是Hadoop和HBase主要先决条件。首先应该使用"java -verion"检查java是否存在在您的系统上。 java -version 命令的语法如下。
+$ java -version
+
+
+	如果一切正常，它会得到下面的输出。
+java version "1.7.0_71"
+Java(TM) SE Runtime Environment (build 1.7.0_71-b13)
+Java HotSpot(TM) Client VM (build 25.0-b02, mixed mode)
+
+
+	如果Java还没有安装在系统中，然后按照下面给出的步骤安装Java。
+
+
+
+
+
+
+

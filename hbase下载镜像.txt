@@ -1,0 +1,2 @@
+https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/2.1.5/
+
