@@ -1,0 +1,37 @@
+
+
+1. 用自己的无线网卡(centos7可以读取的，免驱动的)
+
+
+2.把手机打开热点(设置为没有密码) 比如"xiaomi"
+
+3.#modprobe -nv rt2800usb  //查看有没有rt2800的驱动,centos6以上版本基本上都有
+
+4. #lsusb    //查看USB接口的状态，如果识别不到，换个USB接口
+
+5.#whereis iwconfig iwlist wpa_cli //查看是否有iwconfig iwlist wpa_cli命令，我们要用此命令进行配置
+
+
+6.#iwconfig  //查看网卡状态，说明已经有WLAN0网卡
+
+7.#ifconfig   我的无线网卡名   up  //启动无线网卡
+
+8. #iwlist 我的无线网卡名 scan  //扫描无线网络,如果有用手机热点，建议将热点改为英文名字，避免乱码的问题
+
+9.#iwconfig 我的无线网卡名 essid "xiaomi"  //连接手机的WIFI热点小米
+
+注意：为了简易方便，建议将手机的加密方式取消。因为加密方式改为wpa的方式的话，还得要修改配置文件，比较麻烦。所以建议直接取消密码
+
+
+10.#dhclient wlan0 或者dhcpcd wlan0 //让wlan0 自动获取IP即可。
+
+#iwconfig wlan0 //查看wlan0的各种状态
+
+#ifconfig  //查看网卡的IP地址等信息
+
+#route //查看路由
+
+#ping www.baidu.com //查看网络是否连接成功。
+
+
+

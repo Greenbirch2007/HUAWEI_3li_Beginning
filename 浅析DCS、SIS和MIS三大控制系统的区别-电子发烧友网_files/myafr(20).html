@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0149)http://www1.elecfans.com/www/delivery/myafr.php?target=_blank&cb=0.6326559639954783&zoneid=600&prefer=http%3A%2F%2Fwww.elecfans.com%2Fd%2F737567.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advertisement</title>
+<script src="./hm.js"></script><script async="" src="./analytics.js"></script><script type="text/javascript">document.domain = 'elecfans.com';</script><style type="text/css">
+body {margin:0; height:100%; background-color:transparent; width:100%; text-align:center;}
+</style>
+</head>
+<body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: "微软雅黑";
+        font-size: 14px;
+    }
+
+    html,
+    body {
+        text-align: left;
+        height: 100%;
+    }
+
+    .warpper {
+        padding: 10px;
+        width: 285px;
+    }
+
+    a {
+        color: #666;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #d22;
+        text-decoration: underline;
+    }
+
+    img {
+        border: none;
+    }
+
+    .clearfix:after {
+        content: '\20';
+        display: block;
+        height: 0;
+        clear: both;
+    }
+
+    .clearfix {
+        zoom: 1;
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+    /*滚动LOGO*/
+
+    #marquee {
+        width: 100%;
+        overflow: hidden;
+        margin: 20px 0;
+    }
+
+    #marquee li {
+        float: left;
+        list-style: none;
+    }
+
+    #marquee a {}
+
+    #marquee img {
+        width: 120px;
+        height: 60px;
+        display: block;
+        margin-right: 5px;
+        border-bottom: 3px solid #ccc;
+    }
+
+    #marquee a:hover img {
+        border-bottom-color: #d22;
+    }
+    /*广告列表*/
+
+    #ads_lists {
+        display: block;
+        list-style: none;
+    }
+
+    #ads_lists li {
+        display: none;
+        line-height: 25px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-indent: -8px;
+    }
+</style>
+<script src="./jquery-1.11.3.min(1).js"></script>
+<script>
+    /*
+     * 无缝滚动插件
+     */
+    (function($) {
+        $.fn.kxbdMarquee = function(options) {
+            var opts = $.extend({}, $.fn.kxbdMarquee.defaults, options);
+            return this.each(function() {
+                var $marquee = $(this); //滚动元素容器
+                var _scrollObj = $marquee.get(0); //滚动元素容器DOM
+                var scrollW = $marquee.width(); //滚动元素容器的宽度
+                var scrollH = $marquee.height(); //滚动元素容器的高度
+                var $element = $marquee.children(); //滚动元素
+                var $kids = $element.children(); //滚动子元素
+                var scrollSize = 0; //滚动元素尺寸
+                var _type = (opts.direction == 'left' || opts.direction == 'right') ? 1 : 0; //滚动类型，1左右，0上下
+
+                //防止滚动子元素比滚动元素宽而取不到实际滚动子元素宽度
+                $element.css(_type ? 'width' : 'height', 10000);
+                //获取滚动元素的尺寸
+                if(opts.isEqual) {
+                    scrollSize = $kids[_type ? 'outerWidth' : 'outerHeight']() * $kids.length;
+                } else {
+                    $kids.each(function() {
+                        scrollSize += $(this)[_type ? 'outerWidth' : 'outerHeight']();
+                    });
+                }
+                //滚动元素总尺寸小于容器尺寸，不滚动
+                if(scrollSize < (_type ? scrollW : scrollH)) return;
+                //克隆滚动子元素将其插入到滚动元素后，并设定滚动元素宽度
+                $element.append($kids.clone()).css(_type ? 'width' : 'height', scrollSize * 2);
+
+                var numMoved = 0;
+
+                function scrollFunc() {
+                    var _dir = (opts.direction == 'left' || opts.direction == 'right') ? 'scrollLeft' : 'scrollTop';
+                    if(opts.loop > 0) {
+                        numMoved += opts.scrollAmount;
+                        if(numMoved > scrollSize * opts.loop) {
+                            _scrollObj[_dir] = 0;
+                            return clearInterval(moveId);
+                        }
+                    }
+                    if(opts.direction == 'left' || opts.direction == 'up') {
+                        var newPos = _scrollObj[_dir] + opts.scrollAmount;
+                        if(newPos >= scrollSize) {
+                            newPos -= scrollSize;
+                        }
+                        _scrollObj[_dir] = newPos;
+                    } else {
+                        var newPos = _scrollObj[_dir] - opts.scrollAmount;
+                        if(newPos <= 0) {
+                            newPos += scrollSize;
+                        }
+                        _scrollObj[_dir] = newPos;
+                    }
+                };
+                //滚动开始
+                var moveId = setInterval(scrollFunc, opts.scrollDelay);
+                //鼠标划过停止滚动
+                $marquee.hover(
+                    function() {
+                        clearInterval(moveId);
+                    },
+                    function() {
+                        clearInterval(moveId);
+                        moveId = setInterval(scrollFunc, opts.scrollDelay);
+                    }
+                );
+
+                //控制加速运动
+                if(opts.controlBtn) {
+                    $.each(opts.controlBtn, function(i, val) {
+                        $(val).bind(opts.eventA, function() {
+                            opts.direction = i;
+                            opts.oldAmount = opts.scrollAmount;
+                            opts.scrollAmount = opts.newAmount;
+                        }).bind(opts.eventB, function() {
+                            opts.scrollAmount = opts.oldAmount;
+                        });
+                    });
+                }
+            });
+        };
+        $.fn.kxbdMarquee.defaults = {
+            isEqual: true, //所有滚动的元素长宽是否相等,true,false
+            loop: 0, //循环滚动次数，0时无限
+            direction: 'left', //滚动方向，'left','right','up','down'
+            scrollAmount: 1, //步长
+            scrollDelay: 30, //时长
+            newAmount: 3, //加速滚动的步长
+            eventA: 'mousedown', //鼠标事件，加速
+            eventB: 'mouseup' //鼠标事件，原速
+        };
+
+        $.fn.kxbdMarquee.setDefaults = function(settings) {
+            $.extend($.fn.kxbdMarquee.defaults, settings);
+        };
+
+    })(jQuery);
+
+    $(function() {
+        /*
+         *数组随机排列
+         */
+        function ArrRadomSort(oldArr) {
+            oldArr.sort(function(a, b) {
+                return Math.random() > .5 ? -1 : 1;
+                //用Math.random()函数生成0~1之间的随机数与0.5比较，返回-1或1
+            });
+            return oldArr;
+        }
+
+        /*
+         *marquee区域随机排序
+         */
+        var getMaruqeeBox = $('#marquee');
+
+        var setMarqueeArr = [];
+        getMaruqeeBox.find("li").each(function(index, element) {
+            setMarqueeArr.push(element);
+        });
+        var setMarqueeArr = ArrRadomSort(setMarqueeArr);
+        getMaruqeeBox.find("ul").html(setMarqueeArr);
+        /*
+         * 无缝滚动
+         */
+        getMaruqeeBox.kxbdMarquee({
+            direction: 'left',
+            eventA: 'mouseenter',
+            eventB: 'mouseleave'
+        });
+
+        /*
+         * 随机抽取新闻,每个厂商出中抽取2条，如果不足就下一家，总共凑足8条数据，随机排序显示
+         * 实现思路：
+         * 1.先对每个子厂商新闻列表打乱随机排序，截取2条新闻
+         * 2.将每个子厂商截取的新闻都放入到总数组中去
+         * 3.对总数组进行截取8条数据，
+         * 4.打乱顺序，再显示出来
+         *
+         */
+
+        var getAdsList = $("#ads_lists");
+
+        var setSortArr = [];
+        getAdsList.find("ul").each(function(index, element) {
+		
+            //每个UL中的列表先随机排序一次
+            var sortSubArr = [];
+            $(element).find("li").each(function(subIndex, subElement) {
+                sortSubArr.push(subElement);
+            });
+			
+            sortSubArr = ArrRadomSort(sortSubArr).slice(0, 2); //随机截取两条
+	
+            for(var i in sortSubArr) {
+                setSortArr.push(sortSubArr[i]); //放到总的要显示的数组中去
+            }
+        });
+        setSortArr=ArrRadomSort(setSortArr).slice(0, 8);
+        //多次打乱顺序，以获得更加随机的效果
+        for(var i = 0; i < 8; i++) {
+            setSortArr = ArrRadomSort(setSortArr);
+        }
+        getAdsList.html(setSortArr).find("li").show();
+    });
+</script>
+
+<div class="warpper">
+    <h2>厂商互动 </h2>
+    <div id="marquee">
+        <ul class="clearfix" style="width: 1000px;"><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fadi201907%2Findex.html%3Fhplogo_120-60" target="_blank"><img src="./ADI_logo_120-60.jpg" alt="ADI"></a>
+			</li><li>
+                    <a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fquiz%2F54%3Felecfans_source%3Dhplogo" target="_blank"><img src="./Oneyac_logo_120x60.jpg" alt="Oneyac"></a>
+                </li><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fkeysight201907%2Findex.html%3Flistrc" target="_blank"><img src="./keysight-logo-120x60.jpg" alt="Keysight"></a>
+			</li><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fgore%2Findex.html%3Ftextbanner" target="_blank"><img src="./Gore_logo_120x60.jpg" alt="Gore"></a>
+			</li><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fadi201907%2Findex.html%3Fhplogo_120-60" target="_blank"><img src="./ADI_logo_120-60.jpg" alt="ADI"></a>
+			</li><li>
+                    <a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fquiz%2F54%3Felecfans_source%3Dhplogo" target="_blank"><img src="./Oneyac_logo_120x60.jpg" alt="Oneyac"></a>
+                </li><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fkeysight201907%2Findex.html%3Flistrc" target="_blank"><img src="./keysight-logo-120x60.jpg" alt="Keysight"></a>
+			</li><li>
+			<a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fgore%2Findex.html%3Ftextbanner" target="_blank"><img src="./Gore_logo_120x60.jpg" alt="Gore"></a>
+			</li></ul>
+	</div>
+    <ul id="ads_lists"><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fadi201907%2Findex.html%3Fhptxt" target="_blank">【技术视频】探讨如何和冰冷的机器实时对话</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fgore%2Findex.html%3Ftextbanner" target="_blank">【热门资源】用于电路板组件的MEMS方案</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fkeysight201907%2Findex.html%3Frc" target="_blank">【技术文章】克服数据中心收发信机测试的三大挑战</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Furl.elecfans.com%2Fu%2F7b06cc591c%3FADIlink_drc" target="_blank">【模拟电路】源电路—信号源和电源</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fadi201907%2Findex.html%3Fhptxt" target="_blank">【干货满满】MEMS加速度计工作原理</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fkeysight201907%2Findex.html%3Frc" target="_blank">【资源分享】将PCIe 4.0的吞吐量达到32 GT/s</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fcompany%2Fgore%2Findex.html%3Ftextbanner" target="_blank">【解决方案】如何为MEMS提供内外防护</a></li><li style="display: list-item;"><a href="http://www1.elecfans.com/www/delivery/ck.php?oaparams=2__bannerid=1369__zoneid=600__cb=ef97efe704__oadest=http%3A%2F%2Fwww.elecfans.com%2Fquiz%2F54%3Felecfans_source%3Dtextbanner" target="_blank">【方案下载】个护健康设备系统方案一站式下载</a></li></ul></div><div id="beacon_ef97efe704" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="./lg(20).php" width="0" height="0" alt="" style="width: 0px; height: 0px;"></div>
+<script src="./tongji.js"></script>
+
+</body></html>
